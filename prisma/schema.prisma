@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model LegacyDevices {
+  id               String       @id @default(uuid())
+  ward             String
+  wardName         String?
+  hospital         String
+  hospitalName     String?
+  sn               String       @unique
+  seq              Int          @unique
+  name             String
+  lastInsert       DateTime?    @default(now())
+  lastTemp         Float?       @default(0)
+  lastNotification DateTime?    @default(now())
+  lastEvent        String?
+  door             Boolean      @default(false)
+  plug             Boolean      @default(false)
+  ip               String?
+  events           LegacyEvents[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model LegacyEvents {
+  id        String        @id @default(uuid())
+  deviceId  String
+  probe     String
+  event     String
+  type      String
+  device    LegacyDevices @relation(fields: [deviceId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([deviceId])
+}
+
+model SummaryEvents {
+  id           String   @id @default(uuid())
+  log          Int
+  notification Int
+  event        String
+  tag          String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
