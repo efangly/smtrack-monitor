@@ -17,7 +17,9 @@ export class EventService {
   async findAll() {
     const cached = await this.redis.get('summary');
     if (cached) return JSON.parse(cached);
-    const summaries = await this.prisma.summaryEvents.findMany();
+    const summaries = await this.prisma.summaryEvents.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
     await this.redis.set('summary', JSON.stringify(summaries), 60); // Cache for 1 minute
     return summaries;
   }

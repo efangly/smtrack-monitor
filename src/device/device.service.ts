@@ -16,7 +16,10 @@ export class DeviceService {
   async findAll() {
     const cached = await this.redis.get('device');
     if (cached) return JSON.parse(cached);
-    const devices = await this.prisma.legacyDevices.findMany();
+    const devices = await this.prisma.legacyDevices.findMany({
+      include: { events: { orderBy: { createdAt: 'desc' } } },
+      orderBy: { seq: 'asc' }
+    });
     await this.redis.set('device', JSON.stringify(devices), 60); // Cache for 1 minute
     return devices;
   }
@@ -26,7 +29,7 @@ export class DeviceService {
     if (cached) return JSON.parse(cached);
     const device = await this.prisma.legacyDevices.findUnique({ 
       where: { id },
-      include: { events: true }
+      include: { events: { orderBy: { createdAt: 'desc' } } },
     });
     await this.redis.set(`device:${id}`, JSON.stringify(device), 60); // Cache for 1 minute
     return device;
