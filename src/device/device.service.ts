@@ -1,38 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RedisService } from '../redis/redis.service';
 import { CreateDeviceDto } from './dto/create-device.dto';
 
 @Injectable()
 export class DeviceService {
-  constructor(private readonly prisma: PrismaService, private readonly redis: RedisService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateDeviceDto) {
-    const device = await this.prisma.legacyDevices.create({ data: data });
-    await this.redis.del('device');
-    return device;
+    return this.prisma.legacyDevices.create({ data: data });
   }
 
-  async findAll() {
-    const cached = await this.redis.get('device');
-    if (cached) return JSON.parse(cached);
-    const devices = await this.prisma.legacyDevices.findMany({
+  async findAll(page: string, perpage: string) {
+    return this.prisma.legacyDevices.findMany({
+      skip: page ? (parseInt(page) - 1) * parseInt(perpage) : 0,
+      take: perpage ? parseInt(perpage) : 10,
       include: { events: { orderBy: { createdAt: 'desc' } } },
       orderBy: { seq: 'asc' }
     });
-    await this.redis.set('device', JSON.stringify(devices), 60); // Cache for 1 minute
-    return devices;
   }
 
   async findById(id: string) {
-    const cached = await this.redis.get(`device:${id}`);
-    if (cached) return JSON.parse(cached);
-    const device = await this.prisma.legacyDevices.findUnique({ 
+    return this.prisma.legacyDevices.findUnique({ 
       where: { id },
       include: { events: { orderBy: { createdAt: 'desc' } } },
     });
-    await this.redis.set(`device:${id}`, JSON.stringify(device), 60); // Cache for 1 minute
-    return device;
   }
 
   async update(id: string, data: CreateDeviceDto) {
@@ -40,14 +31,11 @@ export class DeviceService {
       where: { id },
       data: data,
     });
-    await this.redis.del('device');
     return updatedDevice;
   }
 
   async delete(id: string) {
-    const deletedDevice = await this.prisma.legacyDevices.delete({ where: { id } });
-    await this.redis.del('device');
-    await this.redis.del(`device:${id}`);
-    return deletedDevice;
+    await this.prisma.legacyDevices.delete({ where: { id } });
+    return 'Deleted';
   }
 }

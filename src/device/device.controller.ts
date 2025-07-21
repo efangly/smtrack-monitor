@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { DeviceService } from './device.service';
 import { EventPattern, Ctx, Payload, RmqContext } from '@nestjs/microservices';
 import { CreateDeviceDto } from './dto/create-device.dto';
@@ -30,8 +30,8 @@ export class DeviceController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll() {
-    return this.deviceService.findAll();
+  async findAll(@Query('page') page: string, @Query('perpage') perpage: string) {
+    return this.deviceService.findAll(page, perpage);
   }
 
   @UseGuards(JwtAuthGuard)
