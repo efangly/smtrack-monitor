@@ -11,12 +11,16 @@ export class DeviceService {
   }
 
   async findAll(page: string, perpage: string) {
-    return this.prisma.legacyDevices.findMany({
-      skip: page ? (parseInt(page) - 1) * parseInt(perpage) : 0,
-      take: perpage ? parseInt(perpage) : 10,
-      include: { events: { orderBy: { createdAt: 'desc' } } },
-      orderBy: { seq: 'asc' }
-    });
+    const [ result, total ] = await this.prisma.$transaction([
+      this.prisma.legacyDevices.findMany({
+        skip: page ? (parseInt(page) - 1) * parseInt(perpage) : 0,
+        take: perpage ? parseInt(perpage) : 10,
+        include: { events: { orderBy: { createdAt: 'desc' } } },
+        orderBy: { seq: 'asc' }
+      }),
+      this.prisma.legacyDevices.findMany(),
+    ])
+    return { result, total };
   }
 
   async findById(id: string) {

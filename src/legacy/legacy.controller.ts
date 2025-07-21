@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { EventPattern, Ctx, Payload, RmqContext } from '@nestjs/microservices';
 import { CreateLegacyEventsDto } from './dto/create-legacy.dto';
 import { LegacyService } from './legacy.service';
@@ -31,8 +31,8 @@ export class LegacyController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll() {
-    return this.legacyService.findAll();
+  async findAll(@Query('page') page: string, @Query('perpage') perpage: string) {
+    return this.legacyService.findAll(page, perpage);
   }
 
   @UseGuards(JwtAuthGuard)
