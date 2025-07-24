@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DeviceModule } from './device/device.module';
 import { EventModule } from './event/event.module';
 import { JwtStrategy } from './common/strategies';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { JwtStrategy } from './common/strategies';
     HealthModule, 
     LegacyModule, 
     DeviceModule, 
-    EventModule
+    EventModule, 
+    RedisModule
   ],
   controllers: [],
   providers: [JwtStrategy],
