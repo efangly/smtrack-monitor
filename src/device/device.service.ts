@@ -12,7 +12,7 @@ export class DeviceService {
   }
 
   async findAll(page: string, perpage: string) {
-    const cacheKey = `devices:page:${page}:perpage:${perpage}`;
+    const cacheKey = `monitor-devices:page:${page}:perpage:${perpage}`;
     const cached = await this.redis.get(cacheKey);
     if (cached) return JSON.parse(cached);
     const [result, total] = await this.prisma.$transaction([
