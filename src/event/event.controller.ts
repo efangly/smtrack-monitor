@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { EventPattern, Ctx, Payload, RmqContext } from '@nestjs/microservices';
 import { EventService } from './event.service';
 import { CreateSummaryEventsDto } from './dto/create-event.dto';
@@ -31,8 +31,8 @@ export class EventController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Query('page') page: string, @Query('perpage') perpage: string) {
-    return this.eventService.findAll(page, perpage);
+  async findAll() {
+    return this.eventService.findAll();
   }
 
   @UseGuards(JwtAuthGuard)

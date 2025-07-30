@@ -6,26 +6,21 @@ import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class LegacyService {
-  constructor(private readonly prisma: PrismaService, private readonly redis: RedisService) {}
+  constructor(private readonly prisma: PrismaService, private readonly redis: RedisService) { }
 
   async create(data: CreateLegacyEventsDto) {
     return this.prisma.legacyEvents.create({ data: data });
   }
 
-  async findAll(page: string, perpage: string) {
-    const cacheKey = `legacy-events:page:${page}:perpage:${perpage}`;
+  async findAll() {
+    const cacheKey = 'legacy-events';
     const cached = await this.redis.get(cacheKey);
     if (cached) return JSON.parse(cached);
-    const [ result, total ] = await this.prisma.$transaction([
-      this.prisma.legacyEvents.findMany({ 
-        skip: page ? (parseInt(page) - 1) * parseInt(perpage) : 0,
-        take: perpage ? parseInt(perpage) : 10,
-        orderBy: { createdAt: 'desc' } 
-      }),
-      this.prisma.legacyEvents.count()
-    ]);
-    const response = { result, total };
-    if (response.total > 0) await this.redis.set(cacheKey, JSON.stringify(response), 60); // cache 60 seconds
+    const response = await this.prisma.legacyEvents.findMany({
+      include: { device: { select: { wardName: true, hospitalName: true } } },
+      orderBy: { createdAt: 'desc' }
+    });
+    if (response.length > 0) await this.redis.set(cacheKey, JSON.stringify(response), 60); // cache 60 seconds
     return response;
   }
 

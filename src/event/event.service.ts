@@ -6,26 +6,18 @@ import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class EventService {
-  constructor(private readonly prisma: PrismaService, private readonly redis: RedisService) {}
+  constructor(private readonly prisma: PrismaService, private readonly redis: RedisService) { }
 
   async create(data: CreateSummaryEventsDto) {
     return this.prisma.summaryEvents.create({ data: data });
   }
 
-  async findAll(page: string, perpage: string) {
-    const cacheKey = `events:page:${page}:perpage:${perpage}`;
+  async findAll() {
+    const cacheKey = 'events';
     const cached = await this.redis.get(cacheKey);
     if (cached) return JSON.parse(cached);
-    const [ result, total ] = await this.prisma.$transaction([
-      this.prisma.summaryEvents.findMany({ 
-        skip: page ? (parseInt(page) - 1) * parseInt(perpage) : 0,
-        take: perpage ? parseInt(perpage) : 10,
-        orderBy: { createdAt: 'desc' } 
-      }),
-      this.prisma.summaryEvents.count()
-    ]);
-    const response = { result, total };
-    if (response.total > 0) await this.redis.set(cacheKey, JSON.stringify(response), 60); // cache 60 seconds
+    const response = await this.prisma.summaryEvents.findMany({ orderBy: { createdAt: 'desc' } });
+    if (response.length > 0) await this.redis.set(cacheKey, JSON.stringify(response), 60); // cache 60 seconds
     return response;
   }
 

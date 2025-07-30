@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { DeviceService } from './device.service';
 import { EventPattern, Ctx, Payload, RmqContext } from '@nestjs/microservices';
 import { CreateDeviceDto } from './dto/create-device.dto';
 import { JwtAuthGuard } from '../common/guards/jwt.guard';
+import { UpdateDeviceDto } from './dto/update-device.dto';
 
 @Controller('device')
 export class DeviceController {
@@ -22,6 +23,19 @@ export class DeviceController {
     }
   }
 
+  @EventPattern('update-device')
+  async updateDevice(@Payload() data: { id: string, update: UpdateDeviceDto }, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const message = context.getMessage();
+    try {
+      await this.deviceService.update(data.id, data.update);
+      channel.ack(message);
+    } catch (error) {
+      this.logger.error(error);
+      channel.nack(message, false, false);
+    }
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() data: CreateDeviceDto) {
@@ -30,8 +44,8 @@ export class DeviceController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Query('page') page: string, @Query('perpage') perpage: string) {
-    return this.deviceService.findAll(page, perpage);
+  async findAll() {
+    return this.deviceService.findAll();
   }
 
   @UseGuards(JwtAuthGuard)
