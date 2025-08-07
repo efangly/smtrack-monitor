@@ -16,7 +16,7 @@ export class CreateSummaryEventsDto {
 
   @IsNotEmpty()
   @IsString()
-  event: string;
+  date: string;
 
   @IsOptional()
   @IsEnum(EventType)
