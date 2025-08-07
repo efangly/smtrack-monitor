@@ -3,12 +3,15 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateSummaryEventsDto } from './dto/create-event.dto';
 import { UpdateSummaryEventsDto } from './dto/update-event.dto';
 import { RedisService } from '../redis/redis.service';
+import { dateFormat } from '../common/utils/date.util';
 
 @Injectable()
 export class EventService {
   constructor(private readonly prisma: PrismaService, private readonly redis: RedisService) { }
 
   async create(data: CreateSummaryEventsDto) {
+    data.createdAt = dateFormat(new Date());
+    data.updatedAt = dateFormat(new Date());
     return this.prisma.summaryEvents.create({ data: data });
   }
 

@@ -1,5 +1,5 @@
 import { EventType } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateSummaryEventsDto {
   @IsOptional()
@@ -21,4 +21,12 @@ export class CreateSummaryEventsDto {
   @IsOptional()
   @IsEnum(EventType)
   tag?: EventType
+
+  @IsOptional()
+  @IsDate()
+  createdAt?: Date;
+
+  @IsOptional()
+  @IsDate()
+  updatedAt?: Date;
 }

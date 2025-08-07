@@ -1,5 +1,5 @@
 import { EventType } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateLegacyEventsDto {
   @IsNotEmpty()
@@ -23,4 +23,12 @@ export class CreateLegacyEventsDto {
   @IsOptional()
   @IsEnum(EventType)
   tag?: EventType
+
+  @IsOptional()
+  @IsDate()
+  createdAt?: Date;
+
+  @IsOptional()
+  @IsDate()
+  updatedAt?: Date;
 }

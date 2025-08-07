@@ -3,12 +3,15 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateLegacyEventsDto } from './dto/create-legacy.dto';
 import { UpdateLegacyEventsDto } from './dto/update-legacy.dto';
 import { RedisService } from '../redis/redis.service';
+import { dateFormat } from '../common/utils/date.util';
 
 @Injectable()
 export class LegacyService {
   constructor(private readonly prisma: PrismaService, private readonly redis: RedisService) { }
 
   async create(data: CreateLegacyEventsDto) {
+    data.createdAt = dateFormat(new Date());
+    data.updatedAt = dateFormat(new Date());
     return this.prisma.legacyEvents.create({ data: data });
   }
 
