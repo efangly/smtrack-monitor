@@ -10,7 +10,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: siamatic/smtrack-monitor:1.0.10
+      IMAGE_NAME: siamatic/smtrack-monitor:1.0.11
     steps:
     - uses: actions/checkout@v4
     - name: Login to docker hub

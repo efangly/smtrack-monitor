@@ -19,7 +19,7 @@ export class EventService {
     const cacheKey = 'events';
     const cached = await this.redis.get(cacheKey);
     if (cached) return JSON.parse(cached);
-    const response = await this.prisma.summaryEvents.findMany({ orderBy: { createdAt: 'desc' } });
+    const response = await this.prisma.summaryEvents.findMany({ orderBy: { date: 'asc' } });
     if (response.length > 0) await this.redis.set(cacheKey, JSON.stringify(response), 60); // cache 60 seconds
     return response;
   }
