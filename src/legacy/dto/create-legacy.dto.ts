@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { EventType } from '@prisma/client';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateLegacyEventsDto {
   @IsNotEmpty()
@@ -18,4 +19,8 @@ export class CreateLegacyEventsDto {
   @IsNotEmpty()
   @IsString()
   type: string;
+
+  @IsOptional()
+  @IsEnum(EventType)
+  tag?: EventType
 }

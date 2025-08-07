@@ -15,35 +15,36 @@ datasource db {
 }
 
 model LegacyDevices {
-  id               String       @id @default(uuid())
+  id               String    @id @default(uuid())
   ward             String
   wardName         String?
   hospital         String
   hospitalName     String?
-  sn               String       @unique
-  seq              Int          @unique
+  sn               String    @unique
+  seq              Int       @unique
   name             String
-  lastInsert       DateTime?    @default(now())
-  lastTemp         Float?       @default(0)
-  lastNotification DateTime?    @default(now())
+  lastInsert       DateTime?
+  lastTemp         Float?
+  lastNotification DateTime?
   lastEvent        String?
-  door             Boolean      @default(false)
-  plug             Boolean      @default(false)
+  door             Boolean   @default(false)
+  plug             Boolean   @default(false)
   ip               String?
   events           LegacyEvents[]
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 model LegacyEvents {
-  id        String        @id @default(uuid())
+  id        String   @id @default(uuid())
   deviceId  String
   probe     String
   event     String
   type      String
-  device    LegacyDevices @relation(fields: [deviceId], references: [id])
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  tag       EventType?  @default(LINE)
+  device    LegacyDevices  @relation(fields: [deviceId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([deviceId])
 }
@@ -52,8 +53,13 @@ model SummaryEvents {
   id           String   @id @default(uuid())
   log          Int
   notification Int
-  event        String
-  tag          String
+  date         String
+  tag          EventType
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+enum EventType {
+  LINE
+  SMTRACK
 }
