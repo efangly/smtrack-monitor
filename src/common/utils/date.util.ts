@@ -1,5 +1,6 @@
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
+import { parseISO } from 'date-fns/parseISO';
 
 export const dateFormat = (datetime: string | number | Date): Date => {
-  return parse(format(datetime, "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+  return parseISO(format(datetime, "yyyy-MM-dd'T'HH:mm:ss'Z'"));
 };
