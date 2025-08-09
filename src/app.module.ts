@@ -7,6 +7,8 @@ import { DeviceModule } from './device/device.module';
 import { EventModule } from './event/event.module';
 import { JwtStrategy } from './common/strategies';
 import { RedisModule } from './redis/redis.module';
+import { ReportModule } from './report/report.module';
+
 
 @Module({
   imports: [
@@ -16,7 +18,8 @@ import { RedisModule } from './redis/redis.module';
     LegacyModule, 
     DeviceModule, 
     EventModule, 
-    RedisModule
+    RedisModule, 
+    ReportModule
   ],
   controllers: [],
   providers: [JwtStrategy],

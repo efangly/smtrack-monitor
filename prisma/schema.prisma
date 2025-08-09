@@ -59,6 +59,20 @@ model SummaryEvents {
   updatedAt    DateTime  @updatedAt
 }
 
+model Reports {
+  id        String     @id @default(uuid())
+  report    String
+  type      ReportType
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt @default(now())
+}
+
+enum ReportType {
+  SUMMARY
+  WARNING
+  CRITICAL
+}
+
 enum EventType {
   LINE
   SMTRACK

@@ -7,7 +7,7 @@ import { dateFormat } from '../common/utils/date.util';
 
 @Injectable()
 export class LegacyService {
-  constructor(private readonly prisma: PrismaService, private readonly redis: RedisService) { }
+  constructor(private readonly prisma: PrismaService, private readonly redis: RedisService) {}
 
   async create(data: CreateLegacyEventsDto) {
     data.createdAt = dateFormat(new Date());
