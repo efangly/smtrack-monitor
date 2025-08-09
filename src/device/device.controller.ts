@@ -31,6 +31,7 @@ export class DeviceController {
       await this.deviceService.update(data.id, data.update);
       channel.ack(message);
     } catch (error) {
+      this.logger.log(data.id);
       this.logger.error(error);
       channel.nack(message, false, false);
     }
